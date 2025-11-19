@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PickIt - Group Restaurant Decisions Made Easy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍽️ PickIt</h1>
+            <p class="tagline">Stop arguing. Start eating.</p>
+        </header>
+
+        <!-- Create Session Screen -->
+        <div id="create-screen" class="screen active">
+            <h2>What's the vibe?</h2>
+            <form id="create-form">
+                <input type="text" id="user-name" placeholder="Your name" required>
+                <textarea id="preferences" placeholder="e.g., Mexican food downtown, vegetarian options, under $30, good margaritas" rows="3" required></textarea>
+                <input type="text" id="location" placeholder="Location (city, state)" value="San Francisco, CA" required>
+                <button type="submit" class="btn-primary">Find Options</button>
+            </form>
+        </div>
+
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="screen">
+            <div class="loader"></div>
+            <p>Finding perfect spots...</p>
+        </div>
+
+        <!-- Candidates Screen -->
+        <div id="candidates-screen" class="screen">
+            <h2>Pick your favorite</h2>
+            <div id="share-link-container">
+                <p>Share with your group:</p>
+                <div class="share-box">
+                    <input type="text" id="share-link" readonly>
+                    <button onclick="copyLink()" class="btn-secondary">Copy</button>
+                </div>
+            </div>
+            <div id="candidates-list"></div>
+            <div id="vote-status"></div>
+        </div>
+
+        <!-- Winner Screen -->
+        <div id="winner-screen" class="screen">
+            <h2>🎉 We have a winner!</h2>
+            <div id="winner-details"></div>
+            <button onclick="location.reload()" class="btn-primary">Start New Decision</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+    <script>
+        // If session ID in URL, load that session
+        const pathParts = window.location.pathname.split('/');
+        if (pathParts[1] === 's' && pathParts[2]) {
+            loadSession(pathParts[2]);
+        }
+    </script>
+</body>
+</html>
