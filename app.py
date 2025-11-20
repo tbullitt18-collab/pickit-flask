@@ -1,13 +1,16 @@
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
 from flask import Flask, request, jsonify, render_template
 import uuid
-from yelp_client import get_candidates_from_yelp_ai
 from datetime import datetime
+from yelp_client import get_candidates_from_yelp_ai
 
 app = Flask(__name__)
-# Use environment variable for secret key or default for dev
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
-
 sessions = {}
 
 @app.route('/')
@@ -69,5 +72,5 @@ def session_page(session_id):
     return render_template('index.html', session_id=session_id)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))  # Read port from environment for Render
-    app.run(host='0.0.0.0', port=port, debug=False)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)  # Change debug=True to False
