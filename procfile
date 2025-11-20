@@ -1,1 +1,1 @@
-web: gunicorn \pickit-flask:app.py
+web: gunicorn Flask(__name__):app.py
