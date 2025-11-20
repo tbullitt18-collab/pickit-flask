@@ -117,14 +117,16 @@ function updateVoteStatus(totalVotes) {
 }
 
 function showWinner(winner) {
+    const categories = winner.categories ? winner.categories.join(' • ') : 'Restaurant';
+    
     document.getElementById('winner-details').innerHTML = `
         <div class="winner-card">
             <div class="winner-name">${winner.name}</div>
-            <div><strong>⭐ ${winner.rating}</strong> • ${winner.price}</div>
-            <div style="margin:15px 0">${winner.address}</div>
-            <div>${winner.categories.join(' • ')}</div>
+            <div><strong>⭐ ${winner.rating || 'N/A'}</strong> • ${winner.price || '$$'}</div>
+            <div style="margin:15px 0">${winner.address || ''}</div>
+            <div>${categories}</div>
             <div style="margin-top:20px">
-                <a href="${winner.url}" target="_blank" class="btn-primary" style="display:inline-block;text-decoration:none">
+                <a href="${winner.url || '#'}" target="_blank" class="btn-primary" style="display:inline-block;text-decoration:none">
                     View on Yelp
                 </a>
             </div>
@@ -142,6 +144,12 @@ async function loadSession(sessionId) {
     
     try {
         const response = await fetch(`/api/session/${sessionId}`);
+        
+        // Check if response is OK before parsing
+        if (!response.ok) {
+            throw new Error(`Session not found (${response.status})`);
+        }
+        
         const session = await response.json();
         
         if (session.status === 'closed' && session.winner) {
@@ -155,7 +163,8 @@ async function loadSession(sessionId) {
             startPolling(sessionId);
         }
     } catch (error) {
-        alert('Session not found');
+        console.error('Load session error:', error);
+        alert('Session not found or expired. Please create a new session.');
         showScreen('create-screen');
     }
 }
@@ -193,3 +202,16 @@ function showScreen(screenId) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(screenId).classList.add('active');
 }
+
+// Check if we're on a session page - LOAD ON PAGE LOAD
+window.addEventListener('DOMContentLoaded', () => {
+    const path = window.location.pathname;
+    const sessionMatch = path.match(/\/s\/([a-zA-Z0-9]+)/);
+    
+    if (sessionMatch) {
+        const sessionId = sessionMatch[1];
+        loadSession(sessionId);
+    } else {
+        showScreen('create-screen');
+    }
+});
