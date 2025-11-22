@@ -3,62 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PickIt - Group Restaurant Decisions Made Easy</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>🍽️ PickIt - Group Restaurant Decision Maker</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>🍽️ PickIt</h1>
-            <p class="tagline">Stop arguing. Start eating.</p>
-        </header>
-
-        <!-- Create Session Screen -->
-        <div id="create-screen" class="screen active">
-            <h2>What's the vibe?</h2>
-            <form id="create-form">
-                <input type="text" id="user-name" placeholder="Your name" required>
-                <textarea id="preferences" placeholder="e.g., Mexican food downtown, vegetarian options, under $30, good margaritas" rows="3" required></textarea>
-                <input type="text" id="location" placeholder="Location (city, state)" value="San Francisco, CA" required>
-                <button type="submit" class="btn-primary">Find Options</button>
-            </form>
+        <h1>🍽️ PickIt</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">Stop arguing. Start eating.</p>
+        
+        <!-- Create Session Section -->
+        <div id="create-section">
+            <h2>Start a New Decision</h2>
+            <div class="preference-input">
+                <input type="text" id="host-name" placeholder="Your name">
+                <input type="text" id="location" placeholder="Location (e.g., Atlanta, GA)">
+                <button onclick="createSession()">Create Session</button>
+            </div>
         </div>
 
-        <!-- Loading Screen -->
-        <div id="loading-screen" class="screen">
-            <div class="loader"></div>
-            <p>Finding perfect spots...</p>
+        <!-- Join Session Section (Hidden by default) -->
+        <div id="join-section" style="display: none;">
+            <h2>Join the Decision</h2>
+            <div class="preference-input">
+                <input type="text" id="participant-name" placeholder="Enter your name">
+                <button onclick="confirmJoin()">Join Session</button>
+            </div>
         </div>
 
-        <!-- Candidates Screen -->
-        <div id="candidates-screen" class="screen">
-            <h2>Pick your favorite</h2>
-            <div id="share-link-container">
-                <p>Share with your group:</p>
-                <div class="share-box">
-                    <input type="text" id="share-link" readonly>
-                    <button onclick="copyLink()" class="btn-secondary">Copy</button>
+        <!-- Session Info (Hidden by default) -->
+        <div id="session-info" style="display: none;">
+            <div class="session-info">
+                <p style="text-align: center; margin-bottom: 10px; color: #666; font-size: 14px;">Session ID:</p>
+                <div class="session-code" id="session-code-display"></div>
+                
+                <div style="margin-top: 20px;">
+                    <p style="margin-bottom: 8px; color: #666; font-size: 14px;">Share this link:</p>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="share-link" readonly style="flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+                        <button onclick="copyLink()" style="white-space: nowrap;">Copy Link</button>
+                    </div>
+                    <p style="margin-top: 10px; font-size: 13px; color: #999; text-align: center;">Share with your group so everyone can submit preferences!</p>
                 </div>
             </div>
-            <div id="candidates-list"></div>
-            <div id="vote-status"></div>
         </div>
 
-        <!-- Winner Screen -->
-        <div id="winner-screen" class="screen">
-            <h2>🎉 We have a winner!</h2>
-            <div id="winner-details"></div>
-            <button onclick="location.reload()" class="btn-primary">Start New Decision</button>
+        <h2 style="display: none;" id="preference-header">🔥 What are you craving?</h2>
+
+        <!-- Preference Input (Hidden by default) -->
+        <div id="preference-section" style="display: none;">
+            <div class="preference-input">
+                <textarea id="preference-input" placeholder="Describe what you want... (e.g., burgers and live music under $30)" rows="3"></textarea>
+                <button onclick="submitPreference()">Submit My Preferences</button>
+            </div>
+            <div id="preferences-list"></div>
+            <button id="start-voting-btn" onclick="startVoting()" style="display: none; width: 100%; margin-top: 20px;">Start Voting</button>
+        </div>
+
+        <!-- Waiting for preferences (Hidden by default) -->
+        <div id="waiting-section" style="display: none;">
+            <p style="text-align: center; color: #666; padding: 40px;">Waiting for host to start voting...</p>
+        </div>
+
+        <!-- Loading (Hidden by default) -->
+        <div id="loading-section" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <div class="loading-text">Finding the perfect spots...</div>
+        </div>
+
+        <!-- Voting Section (Hidden by default) -->
+        <div id="voting-section" style="display: none;">
+            <h2>👥 Vote for Your Favorite</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 30px;">Tap any card to vote</p>
+            <div id="cards-container" class="cards-container"></div>
+        </div>
+
+        <!-- Waiting for votes (Hidden by default) -->
+        <div id="waiting-votes-section" style="display: none;">
+            <p style="text-align: center; color: #666; padding: 40px;">Waiting for everyone to vote...</p>
+        </div>
+
+        <!-- Winner Section (Hidden by default) -->
+        <div id="winner-section" style="display: none;">
+            <div class="winner-display">
+                <h2>🎉 We have a winner!</h2>
+                <img id="winner-image" src="" alt="Restaurant" style="display: none; max-width: 300px; border-radius: 10px; margin: 20px auto;">
+                <div class="winner-name" id="winner-name"></div>
+                <p id="winner-address" style="margin: 10px 0;"></p>
+                <p id="winner-phone" style="margin: 10px 0;"></p>
+                <a id="view-yelp-btn" href="#" target="_blank" style="display: none; color: white; text-decoration: underline; margin-top: 20px;">View on Yelp</a>
+                <button onclick="startNewDecision()" style="margin-top: 30px; background: white; color: #667eea;">Start New Decision</button>
+            </div>
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='app.js') }}"></script>
-    <script>
-        // If session ID in URL, load that session
-        const pathParts = window.location.pathname.split('/');
-        if (pathParts[1] === 's' && pathParts[2]) {
-            loadSession(pathParts[2]);
-        }
-    </script>
+    <script src="/static/app.js"></script>
 </body>
 </html>
