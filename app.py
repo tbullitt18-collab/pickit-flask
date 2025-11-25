@@ -14,12 +14,16 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
 sessions = {}
 
 @app.route('/')
+def landing():
+    return render_template('landing.html')
+
+@app.route('/app')
 def index():
-    return render_template('index.html')
+    return render_template('app.html')
 
 @app.route('/s/<session_id>')
 def session_page(session_id):
-    return render_template('index.html')
+    return render_template('app.html')
 
 @app.route('/api/health')
 def health():
@@ -84,13 +88,11 @@ def submit_preference(session_id):
         if len(preference) > 500:
             return jsonify({'error': 'Preference is too long (max 500 characters)'}), 400
         
-        # Store as simple array
         if not isinstance(session['preferences'], list):
             session['preferences'] = []
         
         session['preferences'].append(preference)
         
-        # Track participants
         if participant_name not in session['participants']:
             session['participants'].append(participant_name)
         
@@ -134,7 +136,6 @@ def reset_session(session_id):
         if not session:
             return jsonify({'error': 'Session not found'}), 404
         
-        # Reset to collecting state
         session['preferences'] = []
         session['candidates'] = []
         session['votes'] = {}
@@ -158,7 +159,6 @@ def start_voting(session_id):
         if not session:
             return jsonify({'error': 'Session not found'}), 404
         
-        # preferences is now a simple array
         all_prefs = session['preferences']
         
         if not all_prefs:
@@ -279,16 +279,13 @@ def vote(session_id):
         if not candidate_id:
             return jsonify({'error': 'No candidate selected'}), 400
         
-        # Verify candidate exists
         if not any(c['id'] == candidate_id for c in session['candidates']):
             return jsonify({'error': 'Invalid candidate selected'}), 400
         
-        # Generate a simple voter ID (in production, use proper user tracking)
         voter_id = request.remote_addr + str(datetime.now().timestamp())
         
         session['votes'][voter_id] = candidate_id
         
-        # Count votes
         vote_counts = {}
         for vid, cid in session['votes'].items():
             vote_counts[cid] = vote_counts.get(cid, 0) + 1
@@ -296,7 +293,6 @@ def vote(session_id):
         num_preferences = len(session['preferences'])
         votes_cast = len(session['votes'])
         
-        # Check for majority winner
         for cid, count in vote_counts.items():
             if count > (num_preferences / 2):
                 winner = next((c for c in session['candidates'] if c['id'] == cid), None)
@@ -311,7 +307,6 @@ def vote(session_id):
                     'tie_breaker': False
                 })
         
-        # If everyone voted, pick winner by most votes (or random if tie)
         if votes_cast >= num_preferences and vote_counts:
             max_votes = max(vote_counts.values())
             tied = [cid for cid, count in vote_counts.items() if count == max_votes]
@@ -340,4 +335,4 @@ def vote(session_id):
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)  # Must be False for production
+    app.run(host='0.0.0.0', port=port, debug=False)

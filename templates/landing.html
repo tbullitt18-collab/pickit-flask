@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍽️ PickIt - Stop Arguing, Start Eating</title>
+    <meta name="description" content="Group restaurant decision making made easy. No more 'where should we eat?' debates. AI-powered voting for your next meal.">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="PickIt - Group Restaurant Decision Maker">
+    <meta property="og:description" content="Stop arguing about where to eat. Let PickIt help your group decide with AI-powered restaurant suggestions and instant voting.">
+    <meta property="og:url" content="https://pickit-flask.onrender.com/">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: float 20s linear infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero h1 {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.8s;
+        }
+        
+        .hero .tagline {
+            font-size: 1.5em;
+            margin-bottom: 40px;
+            opacity: 0.95;
+            animation: fadeInUp 1s;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 20px 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: fadeInUp 1.2s;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 80px 20px;
+            background: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 60px;
+            color: #333;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 40px;
+        }
+        
+        .feature-card {
+            text-align: center;
+            padding: 40px 30px;
+            border-radius: 15px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .feature-card p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        /* How It Works */
+        .how-it-works {
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .step {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            font-size: 1.8em;
+            font-weight: bold;
+            line-height: 60px;
+            margin-bottom: 20px;
+        }
+        
+        .step h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .step p {
+            color: #666;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 100px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            font-size: 3em;
+            margin-bottom: 30px;
+        }
+        
+        .cta-section p {
+            font-size: 1.3em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        /* Footer */
+        footer {
+            background: #2d3748;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5em;
+            }
+            
+            .hero .tagline {
+                font-size: 1.2em;
+            }
+            
+            .cta-button {
+                padding: 15px 35px;
+                font-size: 1.1em;
+            }
+            
+            .section-title {
+                font-size: 2em;
+            }
+            
+            .cta-section h2 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>🍽️ PickIt</h1>
+            <p class="tagline">Stop arguing. Start eating.</p>
+            <p style="font-size: 1.2em; margin-bottom: 40px;">The easiest way for groups to decide where to eat. AI-powered restaurant suggestions meet instant voting.</p>
+            <a href="/app" class="cta-button">Get Started Free →</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Why PickIt?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Lightning Fast</h3>
+                    <p>Create a session in seconds. Share a link. Done. No accounts or downloads required.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI-Powered</h3>
+                    <p>Our AI analyzes everyone's preferences and finds the perfect restaurants using Yelp's database.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🗳️</div>
+                    <h3>Democratic Voting</h3>
+                    <p>Everyone votes on the options. Real-time results. Fair and transparent decision making.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Works Everywhere</h3>
+                    <p>Mobile, tablet, desktop. Works in any browser. No app install needed.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Smart Matching</h3>
+                    <p>Combines dietary restrictions, price ranges, cuisines, and vibes into perfect suggestions.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎉</div>
+                    <h3>Fun & Easy</h3>
+                    <p>Beautiful cards, confetti celebrations, and a delightful experience from start to finish.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Create & Share</h3>
+                    <p>Start a session with your name and location. Share the link with your group.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Submit Preferences</h3>
+                    <p>Everyone submits what they're craving. "Tacos under $20" or "Fancy Italian with wine".</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>AI Finds Options</h3>
+                    <p>Our AI combines all preferences and finds the best restaurant matches nearby.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Vote & Decide</h3>
+                    <p>Everyone votes on the options. The winner is revealed with confetti! 🎉</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to end the debate?</h2>
+            <p>Join thousands making group dining decisions easier.</p>
+            <a href="/app" class="cta-button">Start Picking Now →</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 PickIt. Made with ❤️ for indecisive foodies.</p>
+            <p style="margin-top: 10px;">
+                <a href="https://github.com/tbullitt18-collab/pickit-flask" target="_blank">GitHub</a> · 
+                <a href="/app">Launch App</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
